@@ -14,6 +14,7 @@ mongoose.connect(dbURL)
 
 app.use(morgan('tiny'))
 app.use(express.static('public'))
+app.use(express.urlencoded({extended: true}))
 
 app.set('view engine', 'ejs')
 
@@ -30,31 +31,36 @@ app.get('/blogs', (req, res) => {
     )
 })
 
+app.post('/blogs', ((req, res) => {
+    const blog = new Blog(req.body)
+
+    blog.save().then((result) => {
+        res.redirect('/blogs')
+    }).catch(err => console.log(err)
+    )
+}))
+
+app.get('/blogs/:id', ((req, res) => {
+    const id = req.params.id
+    Blog.findById(id).then((result) => {
+        res.render('details', {blog: result, title: 'Blog Details'})
+    })
+}))
+
+app.delete('/blogs/:id', ((req, res) => {
+    const id = req.params.id
+
+    Blog.findByIdAndDelete(id).then(result => {
+        res.json({redirect: '/blogs'})
+    }).catch(err => console.log(err)
+    )
+}))
+
 app.get('/about', (req,res) => {
     // res.send('<p>It is Express About page</p>')
     // res.sendFile('./views/about.html', {root: __dirname})
     res.render('about', {title: 'About'})
 })
-
-// app.get('/add-blog', (req, res) => {
-//     const blog = new Blog({
-//         title: 'My New Blog',
-//         snippet: 'Lesgo niggas',
-//         body: 'Assalamu alaykum'
-//     })
-//     blog.save().then(result => res.send(result)).catch(err => console.log(err)
-//     )
-// })
-
-// app.get('/all-blogs', (req, res) => {
-//     Blog.find().then((result) => res.send(result)).catch(err => console.log(err)
-//     )
-// })
-
-// app.get('/single-blog', ((req,res) => {
-//     Blog.findById('67ada11335820f8928d3720a').then(result => res.send(result)).catch(err => console.log(err)
-//     )
-// }))
 
 app.get('/blogs/create', (req, res) => {
     res.render('create', {title: 'Create a new blog'})
