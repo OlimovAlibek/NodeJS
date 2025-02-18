@@ -24,7 +24,7 @@ app.get('/', (req,res) => {
     res.redirect('/blogs')
 })
 
-app.use(blogRoutes)
+app.use('/blogs', blogRoutes)
 
 app.get('/about', (req,res) => {
     // res.send('<p>It is Express About page</p>')
